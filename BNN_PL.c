@@ -1,36 +1,36 @@
-#include <ap_cint.h> /*”CˆÓ¸“x®”ƒf[ƒ^ƒ^ƒCƒv‚Ìƒ‰ƒCƒuƒ‰ƒŠ*/
+#include <ap_cint.h> /*ä»»æ„ç²¾åº¦æ•´æ•°ãƒ‡ãƒ¼ã‚¿ã‚¿ã‚¤ãƒ—ã®ãƒ©ã‚¤ãƒ–ãƒ©ãƒª*/
 #include <math.h>
 #include "stdio.h"
 
-#define bs 0.9     /*Batch Deviation‚Ì”÷•ª’l*/
-#define bl4 16     /*BFNN4‘w–Ú‚ÌŠwK—¦(1/bl4)*/
-#define bl3 256    /*BFNN‚R‘w–Ú‚ÌŠwK—¦(1/bl3)*/
-#define bl2 4096   /*BFNN‚Q‘w–Ú‚ÌŠwK—¦(1/bl2)*/
-#define bl1 16384  /*BFNN‚P‘w–Ú‚ÌŠwK—¦(1/bl1)*/
-#define Xc 10      /*ƒoƒbƒ`”*/
-#define Xr 98      /*“ü—Íƒf[ƒ^ƒTƒCƒY*/
-#define W1c 98     /*BFNN‚P‘w–Ú‚Ìd‚İŒW”—ñƒTƒCƒY*/
-#define W1r 120    /*BFNN‚P‘w–Ú‚Ìd‚İŒW”sƒTƒCƒY*/
-#define W2c 15     /*BFNN‚Q‘w–Ú‚Ìd‚İŒW”—ñƒTƒCƒY*/
-#define W2r 120    /*BFNN‚Q‘w–Ú‚Ìd‚İŒW”sƒTƒCƒY*/
-#define W3c 15     /*BFNN‚R‘w–Ú‚Ìd‚İŒW”—ñƒTƒCƒY*/
-#define W3r 120    /*BFNN‚R‘w–Ú‚Ìd‚İŒW”sƒTƒCƒY*/
-#define W4c 15     /*BFNN‚S‘w–Ú‚Ìd‚İŒW”—ñƒTƒCƒY*/
-#define W4r 10     /*BFNN‚S‘w–Ú‚Ìd‚İŒW”sƒTƒCƒY*/
-#define c 0.000001 /*0œZ–h~ŒW”*/
+#define bs 0.9     /*Batch Deviationã®å¾®åˆ†å€¤*/
+#define bl4 16     /*BFNN4å±¤ç›®ã®å­¦ç¿’ç‡(1/bl4)*/
+#define bl3 256    /*BFNNï¼“å±¤ç›®ã®å­¦ç¿’ç‡(1/bl3)*/
+#define bl2 4096   /*BFNNï¼’å±¤ç›®ã®å­¦ç¿’ç‡(1/bl2)*/
+#define bl1 16384  /*BFNNï¼‘å±¤ç›®ã®å­¦ç¿’ç‡(1/bl1)*/
+#define Xc 10      /*ãƒãƒƒãƒæ•°*/
+#define Xr 98      /*å…¥åŠ›ãƒ‡ãƒ¼ã‚¿ã‚µã‚¤ã‚º*/
+#define W1c 98     /*BFNNï¼‘å±¤ç›®ã®é‡ã¿ä¿‚æ•°åˆ—ã‚µã‚¤ã‚º*/
+#define W1r 120    /*BFNNï¼‘å±¤ç›®ã®é‡ã¿ä¿‚æ•°è¡Œã‚µã‚¤ã‚º*/
+#define W2c 15     /*BFNNï¼’å±¤ç›®ã®é‡ã¿ä¿‚æ•°åˆ—ã‚µã‚¤ã‚º*/
+#define W2r 120    /*BFNNï¼’å±¤ç›®ã®é‡ã¿ä¿‚æ•°è¡Œã‚µã‚¤ã‚º*/
+#define W3c 15     /*BFNNï¼“å±¤ç›®ã®é‡ã¿ä¿‚æ•°åˆ—ã‚µã‚¤ã‚º*/
+#define W3r 120    /*BFNNï¼“å±¤ç›®ã®é‡ã¿ä¿‚æ•°è¡Œã‚µã‚¤ã‚º*/
+#define W4c 15     /*BFNNï¼”å±¤ç›®ã®é‡ã¿ä¿‚æ•°åˆ—ã‚µã‚¤ã‚º*/
+#define W4r 10     /*BFNNï¼”å±¤ç›®ã®é‡ã¿ä¿‚æ•°è¡Œã‚µã‚¤ã‚º*/
+#define c 0.000001 /*0é™¤ç®—é˜²æ­¢ä¿‚æ•°*/
 
 
 uint4 popcnt_8(uint8 bits)
-{/*‚P‚Ìƒrƒbƒg”‚ğ”‚¦‚é*/
+{/*ï¼‘ã®ãƒ“ãƒƒãƒˆæ•°ã‚’æ•°ãˆã‚‹*/
 	bits = (bits & 0x55) + (bits >> 1 & 0x55);
 	bits = (bits & 0x33) + (bits >> 2 & 0x33);
 	return bits = (bits & 0x0f) + (bits >> 4 & 0x0f);
 }
 
 /*
-*b_a:STE‚Æ’ñˆÄè–@OL‚Ì‡“`”Ô‚ğs‚¤ŠÖ”
-*Ï˜a‚³‚ê‚½“ü—Í’l>0‚Ì‚Æ‚«1,
-*”Û‚È‚ç‚Î-1(‚±‚±‚Å‚Í0‚É’u‚«Š·‚¦)
+*b_a:STEã¨ææ¡ˆæ‰‹æ³•OLã®é †ä¼ç•ªã‚’è¡Œã†é–¢æ•°
+*ç©å’Œã•ã‚ŒãŸå…¥åŠ›å€¤>0ã®ã¨ã1,
+*å¦ãªã‚‰ã°-1(ã“ã“ã§ã¯0ã«ç½®ãæ›ãˆ)
 */
 void b_a1(int17 in[Xc][W1r], uint8 out[Xc][W1r / 8]) {
 	uint7 j, i;
@@ -66,9 +66,9 @@ L2:for (j = 0; j<(W3r / 8); j++) {
 }
 
 /*
-*b_a_bw:STE‚Ì‹t“`”d‚ğs‚¤ŠÖ”
-*“ü—Í’l‚ªŠJ‹æŠÔ(-1,1)‚Ì‚Æ‚«‘O‘w‚©‚ç‚ÌŒù”z‚É‚PŠ|‚¯‚é
-*”Û‚È‚ç‚Î0
+*b_a_bw:STEã®é€†ä¼æ’­ã‚’è¡Œã†é–¢æ•°
+*å…¥åŠ›å€¤ãŒé–‹åŒºé–“(-1,1)ã®ã¨ãå‰å±¤ã‹ã‚‰ã®å‹¾é…ã«ï¼‘æ›ã‘ã‚‹
+*å¦ãªã‚‰ã°0
 */
 void b_a1_bw(int17 x[Xc][W1r], int32 dy[Xc][W2c * 8]) {
 	uint9 j,i;
@@ -98,9 +98,9 @@ L2:for (j = 0; j<W4c * 8; j++) {
 }
 
 /*
-*leaky_relu1_bw:OL‚Ì‹t“`”d‚ğs‚¤ŠÖ”
-*1>“ü—Í’l>-1‚Ì‚Æ‚«‘O‘w‚©‚ç‚ÌŒù”z‚É‚PŠ|‚¯‚é
-*”Û‚È‚ç‚Î‘O‘w‚©‚ç‚ÌŒù”z‚É0.5Š|‚¯‚é
+*leaky_relu1_bw:OLã®é€†ä¼æ’­ã‚’è¡Œã†é–¢æ•°
+*1>å…¥åŠ›å€¤>-1ã®ã¨ãå‰å±¤ã‹ã‚‰ã®å‹¾é…ã«ï¼‘æ›ã‘ã‚‹
+*å¦ãªã‚‰ã°å‰å±¤ã‹ã‚‰ã®å‹¾é…ã«0.5æ›ã‘ã‚‹
 */
 void leaky_relu1_bw(int17 x[Xc][W1r], int32 dy[Xc][W2c * 8]) {
 	uint9 j,i;
@@ -130,7 +130,7 @@ L2:for (j = 0; j<W4c * 8; j++) {
 }
 
 
-/*bd:ƒoƒbƒ`–ˆ‚É“ü—Í’l‚Ì•Î·‚ğ“±o‚·‚éŠÖ”*/
+/*bd:ãƒãƒƒãƒæ¯ã«å…¥åŠ›å€¤ã®åå·®ã‚’å°å‡ºã™ã‚‹é–¢æ•°*/
 void bd1(int17 in[Xc][W1r], int17 out[Xc][W1r]) {
 	uint10 i, u;
 	uint17 ub[W1r];
@@ -139,12 +139,12 @@ ub1:for (u = 0; u<W1r; u++) {
 ub2:for (i = 0; i<Xc; i++) {
 	sum += in[i][u];
 }
-	ub[u] = sum / Xc;			/*•½‹Ï’lZo*/
+	ub[u] = sum / Xc;			/*å¹³å‡å€¤ç®—å‡º*/
 }
 ab1:for (u = 0; u<W1r; u++) {
 	int32 sum = 0;
 ab2:for (i = 0; i<Xc; i++) {
-	out[i][u] = (in[i][u] - ub[u]);/*•Î·Zo*/
+	out[i][u] = (in[i][u] - ub[u]);/*åå·®ç®—å‡º*/
 }
 }
 
@@ -187,8 +187,8 @@ ab2:for (i = 0; i<Xc; i++) {
 }
 
 /*
-*bd_bw:BD‚Ì‹t“`”d‚ğs‚¤ŠÖ”
-*”÷•ªŒW”‚Íƒoƒbƒ`”‚Ì‚İ‚ÉˆË‘¶‚·‚é‚½‚ß’è”bs‚ğŠ|‚¯‚é
+*bd_bw:BDã®é€†ä¼æ’­ã‚’è¡Œã†é–¢æ•°
+*å¾®åˆ†ä¿‚æ•°ã¯ãƒãƒƒãƒæ•°ã®ã¿ã«ä¾å­˜ã™ã‚‹ãŸã‚å®šæ•°bsã‚’æ›ã‘ã‚‹
 */
 void bd1_bw(int32 dy[Xc][W1r]) {
 	uint10 i, u;
@@ -222,7 +222,7 @@ void bd3_bw(int32 dy[Xc][W3r]) {
 
 
 void sf(int17 in[Xc][W4r], double out[Xc][W4r]) {
-	/*ƒ\ƒtƒgƒ}ƒbƒNƒXŠÖ”*/
+	/*ã‚½ãƒ•ãƒˆãƒãƒƒã‚¯ã‚¹é–¢æ•°*/
 	uint4 i, j;
 sc1:for (j = 0; j<Xc; j++) {
 	int17 max = 0; double s = 0;
@@ -231,25 +231,25 @@ ml1:for (i = 0; i<W4r; i++) {
 }
 
 sl1:for (i = 0; i<W4r; i++) {
-	s += exp(in[j][i] - max);/*ƒI[ƒo[ƒtƒ[–h~*/
+	s += exp(in[j][i] - max);/*ã‚ªãƒ¼ãƒãƒ¼ãƒ•ãƒ­ãƒ¼é˜²æ­¢*/
 }
 
 hl2:for (i = 0; i<W4r; i++) {
-	out[j][i] = exp(in[j][i] - max) / (s + c);/*0œZ–h~*/
+	out[j][i] = exp(in[j][i] - max) / (s + c);/*0é™¤ç®—é˜²æ­¢*/
 }
 }
 }
 
 void s_l_bw(double x[Xc][W4r], uint8 T[Xc][W4r], int8 dx[Xc][W4r]) {
-	/*ƒ\ƒtƒgƒ}ƒbƒNƒXŠÖ”‚ÆŒğ·ƒGƒ“ƒgƒƒs[Œë·ŠÖ”‚Ì‹t“`”d‚ğs‚¤ŠÖ”*/
+	/*ã‚½ãƒ•ãƒˆãƒãƒƒã‚¯ã‚¹é–¢æ•°ã¨äº¤å·®ã‚¨ãƒ³ãƒˆãƒ­ãƒ”ãƒ¼èª¤å·®é–¢æ•°ã®é€†ä¼æ’­ã‚’è¡Œã†é–¢æ•°*/
 	uint4 j, i;
 L1:for (i = 0; i<Xc; i++)
 	L2 : for (j = 0; j<W4r; j++)
-	dx[i][j] = 127 * (x[i][j] - T[i][j]);/*¬”’l‚©‚ç®”’l‚É•ÏŠ·*/
+	dx[i][j] = 127 * (x[i][j] - T[i][j]);/*å°æ•°å€¤ã‹ã‚‰æ•´æ•°å€¤ã«å¤‰æ›*/
    return;
 }
 
-/*bfnn:2’l‰»‘SŒ‹‡ƒjƒ…[ƒ‰ƒ‹ƒlƒbƒgƒ[ƒN(BFNN)‚Ì‡“`”d‚ğs‚¤ŠÖ”*/
+/*bfnn:2å€¤åŒ–å…¨çµåˆãƒ‹ãƒ¥ãƒ¼ãƒ©ãƒ«ãƒãƒƒãƒˆãƒ¯ãƒ¼ã‚¯(BFNN)ã®é †ä¼æ’­ã‚’è¡Œã†é–¢æ•°*/
 void bfnn1(uint8 in[Xc][Xr], uint8 weight[W1c][W1r], int32 bias[W1r], int17 out[Xc][W1r]) {
 	uint9 ib, id, ie;
 L1:for (ie = 0; ie < Xc; ++ie)
@@ -318,7 +318,7 @@ L3:for (id = 0; id < W4c; ++id)
    return;
 }
 
-/*bfnn_db:2’l‰»‘SŒ‹‡ƒjƒ…[ƒ‰ƒ‹ƒlƒbƒgƒ[ƒN(BFNN)‚ÌƒoƒCƒAƒX‚ÌŒù”zZo‚ğs‚¤ŠÖ”*/
+/*bfnn_db:2å€¤åŒ–å…¨çµåˆãƒ‹ãƒ¥ãƒ¼ãƒ©ãƒ«ãƒãƒƒãƒˆãƒ¯ãƒ¼ã‚¯(BFNN)ã®ãƒã‚¤ã‚¢ã‚¹ã®å‹¾é…ç®—å‡ºã‚’è¡Œã†é–¢æ•°*/
 void bfnn4_db(int8 dy[Xc][W4r], int32 db[W4r]) {
 	uint4 ib, ic;
 dbL1:for (ib = 0; ib < W4r; ++ib)
@@ -327,7 +327,7 @@ dbL1:for (ib = 0; ib < W4r; ++ib)
 dbL2:for (ic = 0; ic<Xc; ic++) {
 	sum += dy[ic][ib];
 }
-	 /*ƒoƒCƒAƒX‚ğXV*/
+	 /*ãƒã‚¤ã‚¢ã‚¹ã‚’æ›´æ–°*/
 	 db[ib] = ((db[ib] - sum / bl4)<8388607 && (db[ib] - sum / bl4)>-8388608) ? (db[ib] - sum / bl4) : ((db[ib] - sum / bl4)>0 ? 8388607 : -8388608);
 }
 }
@@ -340,7 +340,7 @@ dbL1:for (ib = 0; ib < W3r; ++ib)
 dbL2:for (ic = 0; ic<Xc; ic++) {
 	sum += dy[ic][ib];
 }
-	 /*ƒoƒCƒAƒX‚ğXV*/
+	 /*ãƒã‚¤ã‚¢ã‚¹ã‚’æ›´æ–°*/
 	 db[ib] = ((db[ib] - sum / bl3)<8388607 && (db[ib] - sum / bl3)>-8388608) ? (db[ib] - sum / bl3) : ((db[ib] - sum / bl3)>0 ? 8388607 : -8388608);
 }
 }
@@ -353,7 +353,7 @@ dbL1:for (ib = 0; ib < W2r; ++ib)
 dbL2:for (ic = 0; ic<Xc; ic++) {
 	sum += dy[ic][ib];
 }
-	 /*ƒoƒCƒAƒX‚ğXV*/
+	 /*ãƒã‚¤ã‚¢ã‚¹ã‚’æ›´æ–°*/
 	 db[ib] = ((db[ib] - sum / bl2)<8388607 && (db[ib] - sum / bl2)>-8388608) ? (db[ib] - sum / bl2) : ((db[ib] - sum / bl2)>0 ? 8388607 : -8388608);
 }
 }
@@ -366,12 +366,12 @@ dbL1:for (ib = 0; ib < W1r; ++ib)
 dbL2:for (ic = 0; ic<Xc; ic++) {
 	sum += dy[ic][ib];
 }
-	 /*ƒoƒCƒAƒX‚ğXV*/
+	 /*ãƒã‚¤ã‚¢ã‚¹ã‚’æ›´æ–°*/
 	 db[ib] = ((db[ib] - sum / bl1)<8388607 && (db[ib] - sum / bl1)>-8388608) ? (db[ib] - sum / bl1) : ((db[ib] - sum / bl1)>0 ? 8388607 : -8388608);
 }
 }
 
-/*bfnn_dw:2’l‰»‘SŒ‹‡ƒjƒ…[ƒ‰ƒ‹ƒlƒbƒgƒ[ƒN(BFNN)‚Ìd‚İŒW”‚ÌŒù”zZo‚ğs‚¤ŠÖ”*/
+/*bfnn_dw:2å€¤åŒ–å…¨çµåˆãƒ‹ãƒ¥ãƒ¼ãƒ©ãƒ«ãƒãƒƒãƒˆãƒ¯ãƒ¼ã‚¯(BFNN)ã®é‡ã¿ä¿‚æ•°ã®å‹¾é…ç®—å‡ºã‚’è¡Œã†é–¢æ•°*/
 void bfnn4_dw(uint8 x[Xc][W4c], int8 dy[Xc][W4r], int8 dw[W4c * 8][W4r]) {
 	uint5 ia, ib, ic, id;
 dwL1:for (ia = 0; ia < W4c; ++ia) {
@@ -381,7 +381,7 @@ dwL3:for (ib = 0; ib < W4r; ++ib) {
 dwL4:for (id = 0; id<Xc; id++) {
 	sum += (((x[id][ia] & (0x80 >> ic)) > 0 ? 1 : -1)*dy[id][ib]);
 }
- 	 /*8bit¸“x‚Ìd‚İŒW”‚ğXV*/
+ 	 /*8bitç²¾åº¦ã®é‡ã¿ä¿‚æ•°ã‚’æ›´æ–°*/
 	 dw[ia * 8 + ic][ib] = ((dw[ia * 8 + ic][ib] - sum / bl4)<127 && (dw[ia * 8 + ic][ib] - sum / bl4)>-128) ? dw[ia * 8 + ic][ib] - sum / bl4 : ((dw[ia * 8 + ic][ib] - sum / bl4)>0 ? 127 : -128);
 }
 }
@@ -397,7 +397,7 @@ dwL3:for (ib = 0; ib < W3r; ++ib) {
 dwL4:for (id = 0; id<Xc; id++) {
 	sum += (((x[id][ia] & (0x80 >> ic)) > 0 ? 1 : -1)*dy[id][ib]);
 }
-	 /*8bit¸“x‚Ìd‚İŒW”‚ğXV*/
+	 /*8bitç²¾åº¦ã®é‡ã¿ä¿‚æ•°ã‚’æ›´æ–°*/
 	 dw[ia * 8 + ic][ib] = ((dw[ia * 8 + ic][ib] - sum / bl3)<127 && (dw[ia * 8 + ic][ib] - sum / bl3)>-128) ? dw[ia * 8 + ic][ib] - sum / bl3 : ((dw[ia * 8 + ic][ib] - sum / bl3)>0 ? 127 : -128);
 }
 }
@@ -413,7 +413,7 @@ dwL3:for (ib = 0; ib < W2r; ++ib) {
 dwL4:for (id = 0; id<Xc; id++) {
 	sum += (((x[id][ia] & (0x80 >> ic)) > 0 ? 1 : -1)*dy[id][ib]);
 }
-	 /*8bit¸“x‚Ìd‚İŒW”‚ğXV*/
+	 /*8bitç²¾åº¦ã®é‡ã¿ä¿‚æ•°ã‚’æ›´æ–°*/
 	 dw[ia * 8 + ic][ib] = ((dw[ia * 8 + ic][ib] - sum / bl2)<127 && (dw[ia * 8 + ic][ib] - sum / bl2)>-128) ? dw[ia * 8 + ic][ib] - sum / bl2 : ((dw[ia * 8 + ic][ib] - sum / bl2)>0 ? 127 : -128);
 
 }
@@ -430,7 +430,7 @@ dwL3:for (ib = 0; ib < W1r; ++ib) {
 dwL4:for (id = 0; id<Xc; id++) {
 	sum += (((x[id][ia] & (0x80 >> ic)) > 0 ? 1 : -1)*dy[id][ib]);
 }
-	 /*8bit¸“x‚Ìd‚İŒW”‚ğXV*/
+	 /*8bitç²¾åº¦ã®é‡ã¿ä¿‚æ•°ã‚’æ›´æ–°*/
 	 dw[ia * 8 + ic][ib] = ((dw[ia * 8 + ic][ib] - sum / bl1)< 127 && (dw[ia * 8 + ic][ib] - sum / bl1)>-128) ? dw[ia * 8 + ic][ib] - sum / bl1 : ((dw[ia * 8 + ic][ib] - sum / bl1)>0 ? 127 : -128);
 
 }
@@ -438,7 +438,7 @@ dwL4:for (id = 0; id<Xc; id++) {
 }
 }
 
-/*bfnn_dx:2’l‰»‘SŒ‹‡ƒjƒ…[ƒ‰ƒ‹ƒlƒbƒgƒ[ƒN(BFNN)‚Ì“ü—Í‚ÌŒù”zZo‚ğs‚¤ŠÖ”*/
+/*bfnn_dx:2å€¤åŒ–å…¨çµåˆãƒ‹ãƒ¥ãƒ¼ãƒ©ãƒ«ãƒãƒƒãƒˆãƒ¯ãƒ¼ã‚¯(BFNN)ã®å…¥åŠ›ã®å‹¾é…ç®—å‡ºã‚’è¡Œã†é–¢æ•°*/
 void bfnn4_dx(uint8 w[W4c][W4r], int8 dy[Xc][W4r], int32 dx[Xc][W4c * 8]) {
 	uint5 ib, id, ic, ia;
 dxL1:for (ia = 0; ia<Xc; ia++) {
@@ -484,7 +484,7 @@ dxL4:for (id = 0; id < W2r; ++id) {
 }
 }
 
-/*bfnn_bw:BFNN‚Ì‹t“`”d‚ğs‚¤ŠÖ”*/
+/*bfnn_bw:BFNNã®é€†ä¼æ’­ã‚’è¡Œã†é–¢æ•°*/
 void bfnn4_bw(int8 dy[Xc][W4r], uint8 x[Xc][W4c], uint8 w[W4c][W4r],
 	int32 dx[Xc][W4c * 8], int8 dw[W4c * 8][W4r], int32 db[W4r])
 {
@@ -514,7 +514,7 @@ void bfnn1_bw(int32 dy[Xc][W2c * 8], uint8 x[Xc][W1c],
 	bfnn1_dw(x, dy, dw);
 }
 
-/*BNNƒ‚ƒfƒ‹Ver.1_0‚Ì„˜_‚ğs‚¤ŠÖ”*/
+/*BNNãƒ¢ãƒ‡ãƒ«Ver.1_0ã®æ¨è«–ã‚’è¡Œã†é–¢æ•°*/
 void model_v_1(uint8 in[Xc][Xr],
 	uint8 weight1[W1c][W1r], int32 bias1[W1r],
 	uint8 weight2[W2c][W2r], int32 bias2[W2r],
@@ -536,15 +536,15 @@ void model_v_1(uint8 in[Xc][Xr],
 
 }
 
-/*BNNƒ‚ƒfƒ‹Ver.1_0‚ÌŠwK/„˜_‚ğs‚¤ŠÖ”*/
+/*BNNãƒ¢ãƒ‡ãƒ«Ver.1_0ã®å­¦ç¿’/æ¨è«–ã‚’è¡Œã†é–¢æ•°*/
 void learn_model_v_1(uint8 in[Xc][Xr],
 	uint8 weight1[W1c][W1r], int32 bias1[W1r],
 	uint8 weight2[W2c][W2r], int32 bias2[W2r],
 	uint8 weight3[W3c][W3r], int32 bias3[W3r],
 	uint8 weight4[W4c][W4r], int32 bias4[W4r],
 	double out[Xc][W4r],
-	uint8 T[Xc][W4r],/*³‰ğƒ‰ƒxƒ‹*/
-	uint8 k          /*ŠwKƒtƒ‰ƒO*/
+	uint8 T[Xc][W4r],/*æ­£è§£ãƒ©ãƒ™ãƒ«*/
+	uint8 k          /*å­¦ç¿’ãƒ•ãƒ©ã‚°*/
 ) {
 	int8 dw1[W1c * 8][W1r], dw2[W2c * 8][W2r], dw3[W3c * 8][W3r], dw4[W4c * 8][W4r];
 	uint8 in2[Xc][W2c], in3[Xc][W3c], in4[Xc][W4c]; int8 ds[Xc][W4r];
@@ -563,7 +563,7 @@ void learn_model_v_1(uint8 in[Xc][Xr],
 		bfnn1_bw(df2, in, dw1, bias1);
 
 		uint10 ia, ib, id, ic;
-		/*XV‚µ‚½8bit¸“x‚Ìd‚İŒW”‚ğ‚Q’l‰»‚µ‘ã“ü*/
+		/*æ›´æ–°ã—ãŸ8bitç²¾åº¦ã®é‡ã¿ä¿‚æ•°ã‚’ï¼’å€¤åŒ–ã—ä»£å…¥*/
 	dw4L1:for (ia = 0; ia < W4r; ++ia) {
 	dw4L2:for (ib = 0; ib < W4c; ++ib) {
 		weight4[ib][ia] = (dw4[ib * 8][ia]>0 ? 0x80 : 0x00) |
@@ -617,7 +617,7 @@ void learn_model_v_1(uint8 in[Xc][Xr],
 	return;
 }
 
-/*BNNƒ‚ƒfƒ‹Ver.2_0‚Ì„˜_‚ğs‚¤ŠÖ”*/
+/*BNNãƒ¢ãƒ‡ãƒ«Ver.2_0ã®æ¨è«–ã‚’è¡Œã†é–¢æ•°*/
 void model_v_2(uint8 in[Xc][Xr],
 	uint8 weight1[W1c][W1r], int32 bias1[W1r],
 	uint8 weight2[W2c][W2r], int32 bias2[W2r],
@@ -643,15 +643,15 @@ void model_v_2(uint8 in[Xc][Xr],
 
 }
 
-/*BNNƒ‚ƒfƒ‹Ver.2_0‚ÌŠwK/„˜_‚ğs‚¤ŠÖ”*/
+/*BNNãƒ¢ãƒ‡ãƒ«Ver.2_0ã®å­¦ç¿’/æ¨è«–ã‚’è¡Œã†é–¢æ•°*/
 void learn_model_v_2(uint8 in[Xc][Xr],
 	uint8 weight1[W1c][W1r], int32 bias1[W1r],
 	uint8 weight2[W2c][W2r], int32 bias2[W2r],
 	uint8 weight3[W3c][W3r], int32 bias3[W3r],
 	uint8 weight4[W4c][W4r], int32 bias4[W4r],
 	double out[Xc][W4r],
-	uint8 T[Xc][W4r],/*³‰ğƒ‰ƒxƒ‹*/
-	uint8 k          /*ŠwKƒtƒ‰ƒO*/
+	uint8 T[Xc][W4r],/*æ­£è§£ãƒ©ãƒ™ãƒ«*/
+	uint8 k          /*å­¦ç¿’ãƒ•ãƒ©ã‚°*/
 ) {
 	int8 dw1[W1c * 8][W1r], dw2[W2c * 8][W2r], dw3[W3c * 8][W3r], dw4[W4c * 8][W4r];
 	uint8 in2[Xc][W2c], in3[Xc][W3c], in4[Xc][W4c]; int8 ds[Xc][W4r];
@@ -674,7 +674,7 @@ void learn_model_v_2(uint8 in[Xc][Xr],
 		bfnn1_bw(df2, in, dw1, bias1);
 
 		uint10 ia, ib, id, ic;
-		/*XV‚µ‚½8bit¸“x‚Ìd‚İŒW”‚ğ‚Q’l‰»‚µ‘ã“ü*/
+		/*æ›´æ–°ã—ãŸ8bitç²¾åº¦ã®é‡ã¿ä¿‚æ•°ã‚’ï¼’å€¤åŒ–ã—ä»£å…¥*/
 	dw4L1:for (ia = 0; ia < W4r; ++ia) {
 	dw4L2:for (ib = 0; ib < W4c; ++ib) {
 		weight4[ib][ia] = (dw4[ib * 8][ia]>0 ? 0x80 : 0x00) |
