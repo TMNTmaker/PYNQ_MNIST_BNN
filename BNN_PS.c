@@ -1,61 +1,61 @@
 /*
 *
-*IP‚Ì‹N“® void X<IP–¼>_Start(&<ƒCƒ“ƒXƒ^ƒ“ƒX•Ï”>)
-*IP‚Ì“®ìI—¹”»’f void X<IP–¼>_IsDone(&<ƒCƒ“ƒXƒ^ƒ“ƒX•Ï”>)
-*ƒƒ‚ƒŠƒ|[ƒg‚Ö‚Ì‘‚«‚İ u32 X<IP–¼>_Write_<ƒ|[ƒg–¼>_Words(&<ƒCƒ“ƒXƒ^ƒ“ƒX•Ï”>,<ƒIƒtƒZƒbƒg>,<”z—ñ>,<ŒÂ”>)
-*ƒƒ‚ƒŠƒ|[ƒg‚Ö‚Ì“Ç‚İ‚İ u32 X<IP–¼>_Read_<ƒ|[ƒg–¼>_Words(&<ƒCƒ“ƒXƒ^ƒ“ƒX•Ï”>,<ƒIƒtƒZƒbƒg>,<”z—ñ>,<ŒÂ”>)
+*IPã®èµ·å‹• void X<IPå>_Start(&<ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹å¤‰æ•°>)
+*IPã®å‹•ä½œçµ‚äº†åˆ¤æ–­ void X<IPå>_IsDone(&<ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹å¤‰æ•°>)
+*ãƒ¡ãƒ¢ãƒªãƒãƒ¼ãƒˆã¸ã®æ›¸ãè¾¼ã¿ u32 X<IPå>_Write_<ãƒãƒ¼ãƒˆå>_Words(&<ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹å¤‰æ•°>,<ã‚ªãƒ•ã‚»ãƒƒãƒˆ>,<é…åˆ—>,<å€‹æ•°>)
+*ãƒ¡ãƒ¢ãƒªãƒãƒ¼ãƒˆã¸ã®èª­ã¿è¾¼ã¿ u32 X<IPå>_Read_<ãƒãƒ¼ãƒˆå>_Words(&<ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹å¤‰æ•°>,<ã‚ªãƒ•ã‚»ãƒƒãƒˆ>,<é…åˆ—>,<å€‹æ•°>)
 */
 
 #include "stdio.h"
-#include "xtime_l.h"			/*ƒNƒƒbƒN”‚ğ“Ç‚İæ‚éƒ‰ƒCƒuƒ‰ƒŠ*/
-#include "ff.h"               	/*SDcard“Ç‚İ‘‚«—pƒ‰ƒCƒuƒ‰ƒŠ*/
-#include "xlearn_model_v_2.h"   /*BNNƒ‚ƒfƒ‹Ver2_0*/
+#include "xtime_l.h"			/*ã‚¯ãƒ­ãƒƒã‚¯æ•°ã‚’èª­ã¿å–ã‚‹ãƒ©ã‚¤ãƒ–ãƒ©ãƒª*/
+#include "ff.h"               	/*SDcardèª­ã¿æ›¸ãç”¨ãƒ©ã‚¤ãƒ–ãƒ©ãƒª*/
+#include "xlearn_model_v_2.h"   /*BNNãƒ¢ãƒ‡ãƒ«Ver2_0*/
 
-XLearn_model_v_2 Instance;		/*ƒCƒ“ƒXƒ^ƒ“ƒX•Ï”‚ÌéŒ¾*/
+XLearn_model_v_2 Instance;		/*ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹å¤‰æ•°ã®å®£è¨€*/
 XTime startt, endt;
 
-#define Xc 10   /*ƒoƒbƒ`”*/
-#define Xr 98   /*“ü—Íƒf[ƒ^ƒTƒCƒY*/
-#define W1c 98  /*BFNN‚P‘w–Ú‚Ìd‚İŒW”—ñƒTƒCƒY*/
-#define W1r 120 /*BFNN‚P‘w–Ú‚Ìd‚İŒW”sƒTƒCƒY*/
-#define W2c 15  /*BFNN‚Q‘w–Ú‚Ìd‚İŒW”—ñƒTƒCƒY*/
-#define W2r 120 /*BFNN‚Q‘w–Ú‚Ìd‚İŒW”sƒTƒCƒY*/
-#define W3c 15  /*BFNN‚R‘w–Ú‚Ìd‚İŒW”—ñƒTƒCƒY*/
-#define W3r 120 /*BFNN‚R‘w–Ú‚Ìd‚İŒW”sƒTƒCƒY*/
-#define W4c 15  /*BFNN‚S‘w–Ú‚Ìd‚İŒW”—ñƒTƒCƒY*/
-#define W4r 10  /*BFNN‚S‘w–Ú‚Ìd‚İŒW”sƒTƒCƒY*/
-#define c 0.000001 /*0œZ–h~ŒW”*/
+#define Xc 10   /*ãƒãƒƒãƒæ•°*/
+#define Xr 98   /*å…¥åŠ›ãƒ‡ãƒ¼ã‚¿ã‚µã‚¤ã‚º*/
+#define W1c 98  /*BFNNï¼‘å±¤ç›®ã®é‡ã¿ä¿‚æ•°åˆ—ã‚µã‚¤ã‚º*/
+#define W1r 120 /*BFNNï¼‘å±¤ç›®ã®é‡ã¿ä¿‚æ•°è¡Œã‚µã‚¤ã‚º*/
+#define W2c 15  /*BFNNï¼’å±¤ç›®ã®é‡ã¿ä¿‚æ•°åˆ—ã‚µã‚¤ã‚º*/
+#define W2r 120 /*BFNNï¼’å±¤ç›®ã®é‡ã¿ä¿‚æ•°è¡Œã‚µã‚¤ã‚º*/
+#define W3c 15  /*BFNNï¼“å±¤ç›®ã®é‡ã¿ä¿‚æ•°åˆ—ã‚µã‚¤ã‚º*/
+#define W3r 120 /*BFNNï¼“å±¤ç›®ã®é‡ã¿ä¿‚æ•°è¡Œã‚µã‚¤ã‚º*/
+#define W4c 15  /*BFNNï¼”å±¤ç›®ã®é‡ã¿ä¿‚æ•°åˆ—ã‚µã‚¤ã‚º*/
+#define W4r 10  /*BFNNï¼”å±¤ç›®ã®é‡ã¿ä¿‚æ•°è¡Œã‚µã‚¤ã‚º*/
+#define c 0.000001 /*0é™¤ç®—é˜²æ­¢ä¿‚æ•°*/
 
-volatile int b1[W1r]; /*BFNN‚P‘w–Ú‚ÌƒoƒCƒAƒX*/
-volatile int b2[W2r]; /*BFNN‚Q‘w–Ú‚ÌƒoƒCƒAƒX*/
-volatile int b3[W3r]; /*BFNN‚R‘w–Ú‚ÌƒoƒCƒAƒX*/
-volatile int b4[W4r]; /*BFNN‚S‘w–Ú‚ÌƒoƒCƒAƒX*/
-volatile unsigned char w1[W1c][W1r]; /*BFNN‚P‘w–Ú‚Ìd‚İ*/
-volatile unsigned char w2[W2c][W2r]; /*BFNN‚Q‘w–Ú‚Ìd‚İ*/
-volatile unsigned char w3[W3c][W3r]; /*BFNN‚R‘w–Ú‚Ìd‚İ*/
-volatile unsigned char w4[W4c][W4r]; /*BFNN‚S‘w–Ú‚Ìd‚İ*/
+volatile int b1[W1r]; /*BFNNï¼‘å±¤ç›®ã®ãƒã‚¤ã‚¢ã‚¹*/
+volatile int b2[W2r]; /*BFNNï¼’å±¤ç›®ã®ãƒã‚¤ã‚¢ã‚¹*/
+volatile int b3[W3r]; /*BFNNï¼“å±¤ç›®ã®ãƒã‚¤ã‚¢ã‚¹*/
+volatile int b4[W4r]; /*BFNNï¼”å±¤ç›®ã®ãƒã‚¤ã‚¢ã‚¹*/
+volatile unsigned char w1[W1c][W1r]; /*BFNNï¼‘å±¤ç›®ã®é‡ã¿*/
+volatile unsigned char w2[W2c][W2r]; /*BFNNï¼’å±¤ç›®ã®é‡ã¿*/
+volatile unsigned char w3[W3c][W3r]; /*BFNNï¼“å±¤ç›®ã®é‡ã¿*/
+volatile unsigned char w4[W4c][W4r]; /*BFNNï¼”å±¤ç›®ã®é‡ã¿*/
 
-volatile unsigned char set_T[50000][W4r] = { 0 };       /*”š–ˆ‚É®—‚³‚ê‚½³‰ğƒ‰ƒxƒ‹*/
-#define buff ((volatile unsigned char * ) 0x10000800) 	/*ƒtƒ@ƒCƒ‹‚©‚ç’¼Ú“Ç‚İ‚ñ‚¾ƒf[ƒ^*/
-#define mnist ((volatile unsigned char * ) 0x130003ff)  /*’¼Ú“Ç‚İo‚³‚ê‚½‰æ‘œƒf[ƒ^*/
-#define setdata ((volatile unsigned char * ) 0x16000000)/*”š–ˆ‚É®—‚³‚ê‚½‰æ‘œƒf[ƒ^*/
+volatile unsigned char set_T[50000][W4r] = { 0 };       /*æ•°å­—æ¯ã«æ•´ç†ã•ã‚ŒãŸæ­£è§£ãƒ©ãƒ™ãƒ«*/
+#define buff ((volatile unsigned char * ) 0x10000800) 	/*ãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰ç›´æ¥èª­ã¿è¾¼ã‚“ã ãƒ‡ãƒ¼ã‚¿*/
+#define mnist ((volatile unsigned char * ) 0x130003ff)  /*ç›´æ¥èª­ã¿å‡ºã•ã‚ŒãŸç”»åƒãƒ‡ãƒ¼ã‚¿*/
+#define setdata ((volatile unsigned char * ) 0x16000000)/*æ•°å­—æ¯ã«æ•´ç†ã•ã‚ŒãŸç”»åƒãƒ‡ãƒ¼ã‚¿*/
 
 
 void SD_Read(FIL* fil, const TCHAR* filename, UINT size, UINT* nr) {
 	FRESULT Res;
-	/*w’è‚³‚ê‚½ƒtƒ@ƒCƒ‹‚ğŠJ‚­*/
+	/*æŒ‡å®šã•ã‚ŒãŸãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‹ã*/
 	Res = f_open(fil, filename, FA_READ);
 	if (Res) {
 		printf("ERROR: f_open\n");
 		return XST_FAILURE;
 	}
-	/*ŠJ‚¢‚½ƒtƒ@ƒCƒ‹‚Ìƒf[ƒ^‚ğ“Ç‚İ‚Ş*/
+	/*é–‹ã„ãŸãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ‡ãƒ¼ã‚¿ã‚’èª­ã¿è¾¼ã‚€*/
 	Res = f_read(fil, buff, size, nr);
 	if (Res) {
 		printf("ERROR: f_read\n");
 		return XST_FAILURE;
 	}
-	/*ƒtƒ@ƒCƒ‹‚ğ•Â‚¶‚é*/
+	/*ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‰ã˜ã‚‹*/
 	Res = f_close(fil);
 	if (Res != FR_OK) {
 		printf("ERROR: f_close\n");
@@ -66,7 +66,7 @@ void SD_Read(FIL* fil, const TCHAR* filename, UINT size, UINT* nr) {
 
 double my_pow(double x, int n)
 {/*
- x‚Ìnæ‚ğŒvZ
+ xã®nä¹—ã‚’è¨ˆç®—
  */
 	int i;
 	double pow_result = 1;
@@ -85,7 +85,7 @@ double my_pow(double x, int n)
 
 double my_log(double x)
 {/*
- logx‚ğŒvZ
+ logxã‚’è¨ˆç®—
  */
 	int i;
 	double result, result1, result2;
@@ -115,7 +115,7 @@ void init(volatile int b1i[W1r],
 	volatile unsigned char w3i[W3c][W3r],
 	volatile unsigned char w4i[W4c][W4r])
 {
-	/*Šeƒpƒ‰ƒ[ƒ^‚Ì‰Šú‰»*/
+	/*å„ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®åˆæœŸåŒ–*/
 	int i, u;
 	for (i = 0; i<W1r; i++) b1i[i] = ((rand() & 0xff)>128 ? -1 : 1)*(rand() & 0xff);
 	for (i = 0; i<W2r; i++) b2i[i] = ((rand() & 0xff)>128 ? -1 : 1)*(rand() & 0xff);
@@ -142,16 +142,16 @@ void init(volatile int b1i[W1r],
 }
 
 void learn(u32 k, u32 T, u32 data) {
-	/*BNNƒ‚ƒfƒ‹‚ÌŠwKE„˜_Às*/
-	/*ŠwK/„˜_‚Ìw’è*/
+	/*BNNãƒ¢ãƒ‡ãƒ«ã®å­¦ç¿’ãƒ»æ¨è«–å®Ÿè¡Œ*/
+	/*å­¦ç¿’/æ¨è«–ã®æŒ‡å®š*/
 	XLearn_model_v_2_Set_k(&Instance, k);
-	/*ƒoƒbƒ`’PˆÊ‚Å‚Ì³‰ğƒ‰ƒxƒ‹‚Ì‘‚«‚İ*/
+	/*ãƒãƒƒãƒå˜ä½ã§ã®æ­£è§£ãƒ©ãƒ™ãƒ«ã®æ›¸ãè¾¼ã¿*/
 	XLearn_model_v_2_Write_T_Bytes(&Instance, 0, T, W4r*Xc);
-	/*ƒoƒbƒ`’PˆÊ‚Å‚ÌŒP—û/ŒŸØƒf[ƒ^‚Ì‘‚«‚İ*/
+	/*ãƒãƒƒãƒå˜ä½ã§ã®è¨“ç·´/æ¤œè¨¼ãƒ‡ãƒ¼ã‚¿ã®æ›¸ãè¾¼ã¿*/
 	XLearn_model_v_2_Write_in_r_Bytes(&Instance, 0, data, Xr*Xc);
-	/*ŠwK/„˜_ŠJn*/
+	/*å­¦ç¿’/æ¨è«–é–‹å§‹*/
 	XLearn_model_v_2_Start(&Instance);
-	/*“®ìI—¹‚Ü‚Å‘Ò‹@*/
+	/*å‹•ä½œçµ‚äº†ã¾ã§å¾…æ©Ÿ*/
 	while (XLearn_model_v_2_IsDone(&Instance) == 0);
 }
 
@@ -166,7 +166,7 @@ void learn_init(u32 b1i,
 	u32 T,
 	u32 data
 ) {
-	/*‰Šú’lƒpƒ‰ƒ[ƒ^‚Ì‘‚«‚İ*/
+	/*åˆæœŸå€¤ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®æ›¸ãè¾¼ã¿*/
 	XLearn_model_v_2_Write_bias1_Bytes(&Instance, 0, b1i, W1r * 4);
 	XLearn_model_v_2_Write_bias2_Bytes(&Instance, 0, b2i, W2r * 4);
 	XLearn_model_v_2_Write_bias3_Bytes(&Instance, 0, b3i, W3r * 4);
@@ -181,41 +181,41 @@ void learn_init(u32 b1i,
 
 double loss() {
 	/*
-	Œğ·ƒGƒ“ƒgƒƒs[Œë·ŠÖ”‚©‚çloss‚ÌŒvZ
+	äº¤å·®ã‚¨ãƒ³ãƒˆãƒ­ãƒ”ãƒ¼èª¤å·®é–¢æ•°ã‹ã‚‰lossã®è¨ˆç®—
 	*/
 	double res[Xc][W4r];
 	double k = 0;
 	u8 right[Xc][W4r];
-	/*—\‘ª’l‚Ì“Ç‚İæ‚è*/
+	/*äºˆæ¸¬å€¤ã®èª­ã¿å–ã‚Š*/
 	XLearn_model_v_2_Read_out_r_Words(&Instance, 0, res, W4r * 2 * Xc);
-	/*³‰ğƒ‰ƒxƒ‹‚Ì“Ç‚İæ‚è*/
+	/*æ­£è§£ãƒ©ãƒ™ãƒ«ã®èª­ã¿å–ã‚Š*/
 	XLearn_model_v_2_Read_T_Bytes(&Instance, 0, right, W4r*Xc);
 	for (int i = 0; i<Xc; i++) {
 		for (int j = 0; j<W4r; j++) {
 			k -= right[i][j] ? my_log(res[i][j] + c) : 0;
 		}
 	}
-	return k / Xc;/*ƒoƒbƒ`”‚ÅŠ„‚èA•½‹Ï‚ğ‹‚ß‚é*/
+	return k / Xc;/*ãƒãƒƒãƒæ•°ã§å‰²ã‚Šã€å¹³å‡ã‚’æ±‚ã‚ã‚‹*/
 }
 
 double acc() {
 	/*
-	³‰ğ—¦‚ÌŒvZ
+	æ­£è§£ç‡ã®è¨ˆç®—
 	*/
 	double res[Xc][W4r];
 	u8 right[Xc][W4r];
 	double maxp = 0;
 	u8 lp, lr;
 	double ac = 0;
-	/*—\‘ª’l‚Ì“Ç‚İæ‚è*/
+	/*äºˆæ¸¬å€¤ã®èª­ã¿å–ã‚Š*/
 	XLearn_model_v_2_Read_out_r_Words(&Instance, 0, res, W4r * 2 * Xc);
-	/*³‰ğƒ‰ƒxƒ‹‚Ì“Ç‚İæ‚è*/
+	/*æ­£è§£ãƒ©ãƒ™ãƒ«ã®èª­ã¿å–ã‚Š*/
 	XLearn_model_v_2_Read_T_Bytes(&Instance, 0, right, W4r*Xc);
 	for (int i = 0; i<Xc; i++)
 	{
 		maxp = 0;
 		for (int u = 0; u<W4r; u++)
-		{   /*ˆê”Ô‘å‚«‚È—\‘ª’l‚©‚ç—\‘z‚µ‚½ƒNƒ‰ƒX‚ğ‹‚ß‚é*/
+		{   /*ä¸€ç•ªå¤§ããªäºˆæ¸¬å€¤ã‹ã‚‰äºˆæƒ³ã—ãŸã‚¯ãƒ©ã‚¹ã‚’æ±‚ã‚ã‚‹*/
 			if (maxp<res[i][u])
 			{
 				maxp = res[i][u];
@@ -227,23 +227,23 @@ double acc() {
 
 		if (lp == lr) { ac++; }
 	}
-	ac /= Xc;/*ƒoƒbƒ`”‚ÅŠ„‚èA•½‹Ï‚ğ‹‚ß‚é*/
+	ac /= Xc;/*ãƒãƒƒãƒæ•°ã§å‰²ã‚Šã€å¹³å‡ã‚’æ±‚ã‚ã‚‹*/
 	return ac;
 }
 
 int main() {
-	/*MNIST‚Ìè‘‚«”š•¶š‰æ‘œ‚Ìƒtƒ@ƒCƒ‹–¼*/
+	/*MNISTã®æ‰‹æ›¸ãæ•°å­—æ–‡å­—ç”»åƒã®ãƒ•ã‚¡ã‚¤ãƒ«å*/
 	char dataFile[32] = "train-images.idx3-ubyte";
-	/*MNIST‚Ìè‘‚«”š•¶š‚Ì³‰ğƒ‰ƒxƒ‹‚Ìƒtƒ@ƒCƒ‹–¼*/
+	/*MNISTã®æ‰‹æ›¸ãæ•°å­—æ–‡å­—ã®æ­£è§£ãƒ©ãƒ™ãƒ«ã®ãƒ•ã‚¡ã‚¤ãƒ«å*/
 	char labelFile[32] = "train-labels.idx1-ubyte";
 	FIL fil;
 	FATFS fatfs;
 	FRESULT Res;
 	TCHAR *Path = "0:/";
 	UINT NumBytesRead;
-	/*‰æ‘œƒtƒ@ƒCƒ‹ƒf[ƒ^‚ÌƒTƒCƒY*/
+	/*ç”»åƒãƒ•ã‚¡ã‚¤ãƒ«ãƒ‡ãƒ¼ã‚¿ã®ã‚µã‚¤ã‚º*/
 	u32 dataSize = 784 * 60000 + 16;
-	/*³‰ğƒ‰ƒxƒ‹ƒf[ƒ^‚ÌƒTƒCƒY*/
+	/*æ­£è§£ãƒ©ãƒ™ãƒ«ãƒ‡ãƒ¼ã‚¿ã®ã‚µã‚¤ã‚º*/
 	u32 labelSize = 10 * 60000 + 8;
 
 	printf("Now Loading...\n");
@@ -255,11 +255,11 @@ int main() {
 		return XST_FAILURE;
 	}
 
-	/*MNIST‚Ìè‘‚«”š•¶š‰æ‘œ‚Ì“Ç‚İ‚İ*/
+	/*MNISTã®æ‰‹æ›¸ãæ•°å­—æ–‡å­—ç”»åƒã®èª­ã¿è¾¼ã¿*/
 	SD_Read(&fil, dataFile, dataSize, &NumBytesRead);
 
 	for (int i = 2; i<NumBytesRead / 8; i++) {
-		/*2byteˆÈ~‚Ìƒf[ƒ^‚ğ‚Q’l‰»‚µ‚Ä‘ã“ü*/
+		/*2byteä»¥é™ã®ãƒ‡ãƒ¼ã‚¿ã‚’ï¼’å€¤åŒ–ã—ã¦ä»£å…¥*/
 		mnist[i - 2] = (buff[i * 8]>128 ? 0x80 : 0x00) |
 			(buff[(i * 8) + 1]>128 ? 0x40 : 0x00) |
 			(buff[(i * 8) + 2]>128 ? 0x20 : 0x00) |
@@ -270,98 +270,98 @@ int main() {
 			(buff[(i * 8) + 7]>128 ? 0x01 : 0x00);
 	}
 
-	/*³‰ğƒ‰ƒxƒ‹‚Ì“Ç‚İ‚İ*/
+	/*æ­£è§£ãƒ©ãƒ™ãƒ«ã®èª­ã¿è¾¼ã¿*/
 	SD_Read(&fil, labelFile, labelSize, &NumBytesRead);
 
 	uint label_count[10] = { 0 };
-	/*1byteˆÈ~‚Ìƒf[ƒ^‚ğ‚Q’l‰»‚µ‚Ä‘ã“ü*/
+	/*1byteä»¥é™ã®ãƒ‡ãƒ¼ã‚¿ã‚’ï¼’å€¤åŒ–ã—ã¦ä»£å…¥*/
 	for (int i = 8; i<60008; i++) {
 		++label_count[buff[i]];
 		if (label_count[buff[i]]<5000) {
 			for (int n = 0; n<Xr; n++)
-				/*”š•Ê‚Éƒf[ƒ^‚ğ•ª‚¯‚é*/
+				/*æ•°å­—åˆ¥ã«ãƒ‡ãƒ¼ã‚¿ã‚’åˆ†ã‘ã‚‹*/
 				setdata[Xr * (5000 * buff[i] + label_count[buff[i]]) + n] = mnist[Xr * (i - 8) + n];
 			set_T[5000 * buff[i] + label_count[buff[i]]][buff[i]] = 1;
 		}
 	}
-	/*ƒpƒ‰ƒ[ƒ^‰Šú‰»*/
+	/*ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿åˆæœŸåŒ–*/
 	init(b1, b2, b3, b4, w1, w2, w3, w4);
 
-	if (XLearn_model_v_2_Initialize(&Instance, XPAR_XLEARN_MODEL_V_2_0_DEVICE_ID) != XST_SUCCESS)/*ƒCƒ“ƒXƒ^ƒ“ƒX‚Ì‰Šú‰»*/ {
+	if (XLearn_model_v_2_Initialize(&Instance, XPAR_XLEARN_MODEL_V_2_0_DEVICE_ID) != XST_SUCCESS)/*ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã®åˆæœŸåŒ–*/ {
 		printf("init_error!\n");
 		return XST_FAILURE;
 	}
-	/*‰Šú‰»‚µ‚½ƒpƒ‰ƒ[ƒ^‚ğ‰ñ˜H‚É‘‚«‚Ş*/
+	/*åˆæœŸåŒ–ã—ãŸãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’å›è·¯ã«æ›¸ãè¾¼ã‚€*/
 	learn_init((u32)b1, (u32)b2, (u32)b3, (u32)b4, (u32)w1, (u32)w2, (u32)w3, (u32)w4, &(set_T[0]), &(mnist[Xr * 0]));
 
-	u8 rm[Xr*Xc];		/*ƒoƒbƒ`’PˆÊ‚ÌŒP—û—p‰æ‘œƒf[ƒ^*/
-	u8 rt[10][Xc];	/*ƒoƒbƒ`’PˆÊ‚ÌŒP—û—p³‰ğƒ‰ƒxƒ‹*/
-	u8 k_rm[Xr+Xc];	/*ƒoƒbƒ`’PˆÊ‚ÌŒŸØ—p‰æ‘œƒf[ƒ^*/
-	u8 k_rt[10][Xc];/*ƒoƒbƒ`’PˆÊ‚ÌŒŸØ—p³‰ğƒ‰ƒxƒ‹*/
+	u8 rm[Xr*Xc];		/*ãƒãƒƒãƒå˜ä½ã®è¨“ç·´ç”¨ç”»åƒãƒ‡ãƒ¼ã‚¿*/
+	u8 rt[10][Xc];	/*ãƒãƒƒãƒå˜ä½ã®è¨“ç·´ç”¨æ­£è§£ãƒ©ãƒ™ãƒ«*/
+	u8 k_rm[Xr+Xc];	/*ãƒãƒƒãƒå˜ä½ã®æ¤œè¨¼ç”¨ç”»åƒãƒ‡ãƒ¼ã‚¿*/
+	u8 k_rt[10][Xc];/*ãƒãƒƒãƒå˜ä½ã®æ¤œè¨¼ç”¨æ­£è§£ãƒ©ãƒ™ãƒ«*/
 
-#define train_range 6000	/*ŒP—ûƒf[ƒ^–‡”‚Í6000–‡*/
-#define test_range 1000		/*ŒŸØƒf[ƒ^–‡”‚Í1000–‡*/
-#define epochs 100			/*100ƒGƒ|ƒbƒNŠwK‚ğs‚¤*/
+#define train_range 6000	/*è¨“ç·´ãƒ‡ãƒ¼ã‚¿æšæ•°ã¯6000æš*/
+#define test_range 1000		/*æ¤œè¨¼ãƒ‡ãƒ¼ã‚¿æšæ•°ã¯1000æš*/
+#define epochs 100			/*100ã‚¨ãƒãƒƒã‚¯å­¦ç¿’ã‚’è¡Œã†*/
 
 	for (int z = 1; z<epochs; z++) {
 		double mid = 0, tmid = 0, tac = 0, lac = 0;
-		XTime_GetTime(&startt);/*ŠJn‚Ì‘ƒNƒƒbƒN”‚ğ‹L˜^*/
-							   /*ŒP—ûƒf[ƒ^‚ÌŠwK*/
+		XTime_GetTime(&startt);/*é–‹å§‹æ™‚ã®ç·ã‚¯ãƒ­ãƒƒã‚¯æ•°ã‚’è¨˜éŒ²*/
+							   /*è¨“ç·´ãƒ‡ãƒ¼ã‚¿ã®å­¦ç¿’*/
 		for (int f = 0; f<train_range / Xc; f++) {
 			for (int m = 0; m<Xc; m++) {
-				/*0`600‚Ì—”‚ğ¶¬*/
+				/*0ï½600ã®ä¹±æ•°ã‚’ç”Ÿæˆ*/
 				u32 ra = rand() % train_range / Xc;
-				/*0`10‚Ì—”‚ğ¶¬*/
+				/*0ï½10ã®ä¹±æ•°ã‚’ç”Ÿæˆ*/
 				u8 ra_range = rand() % Xc;
 				for (int n = 0; n<Xr; n++)
-					/*ƒoƒbƒ`’PˆÊ‚Å“ü—Í‚·‚éŒP—ûƒf[ƒ^‚ğƒ‰ƒ“ƒ_ƒ€‚É¶¬*/
+					/*ãƒãƒƒãƒå˜ä½ã§å…¥åŠ›ã™ã‚‹è¨“ç·´ãƒ‡ãƒ¼ã‚¿ã‚’ãƒ©ãƒ³ãƒ€ãƒ ã«ç”Ÿæˆ*/
 					rm[(Xr * ra_range) + n] = setdata[(Xr * (5000 * m + ra)) + n];
 				for (int n = 0; n<Xc; n++)
-					/*ƒoƒbƒ`’PˆÊ‚Å“ü—Í‚·‚é³‰ğƒ‰ƒxƒ‹‚ğƒ‰ƒ“ƒ_ƒ€‚É¶¬*/
+					/*ãƒãƒƒãƒå˜ä½ã§å…¥åŠ›ã™ã‚‹æ­£è§£ãƒ©ãƒ™ãƒ«ã‚’ãƒ©ãƒ³ãƒ€ãƒ ã«ç”Ÿæˆ*/
 					rt[ra_range][n] = set_T[5000 * m + ra][n];
 			}
-			/*ŠwKÀs*/
+			/*å­¦ç¿’å®Ÿè¡Œ*/
 			learn(0, rt, rm);
-			lac += acc(); /*³‰ğ—¦‚ğ‰ÁZ*/
-			mid += loss();/*Loss‚ğ‰ÁZ*/
+			lac += acc(); /*æ­£è§£ç‡ã‚’åŠ ç®—*/
+			mid += loss();/*Lossã‚’åŠ ç®—*/
 			}
 		XTime_GetTime(&endt);
 					printf("learn : %8.3f[pcs] ", 6000.0/((endt - startt) / 325000000.0));
 
-		/*ŒŸØƒf[ƒ^‚Ì„˜_*/
+		/*æ¤œè¨¼ãƒ‡ãƒ¼ã‚¿ã®æ¨è«–*/
 		XTime_GetTime(&startt);
 		for (int q = 0; q<test_range / Xc; q++) {
 			for (int m = 0; m<Xc; m++) {
 				for (int n = 0; n<Xr; n++)
-					/*ƒoƒbƒ`’PˆÊ‚Å“ü—Í‚·‚éŒŸØƒf[ƒ^‚ğ¶¬*/
+					/*ãƒãƒƒãƒå˜ä½ã§å…¥åŠ›ã™ã‚‹æ¤œè¨¼ãƒ‡ãƒ¼ã‚¿ã‚’ç”Ÿæˆ*/
 					k_rm[(Xr * m) + n] = setdata[(Xr * (5000 * m + q + train_range / Xc)) + n];
 				for (int n = 0; n<Xc; n++)
-					/*ƒoƒbƒ`’PˆÊ‚Å“ü—Í‚·‚é³‰ğƒ‰ƒxƒ‹‚ğ¶¬*/
+					/*ãƒãƒƒãƒå˜ä½ã§å…¥åŠ›ã™ã‚‹æ­£è§£ãƒ©ãƒ™ãƒ«ã‚’ç”Ÿæˆ*/
 					k_rt[m][n] = set_T[5000 * m + q + train_range / Xc][n];
 			}
 
-			/*„˜_Às*/
+			/*æ¨è«–å®Ÿè¡Œ*/
 			learn(1, k_rt, k_rm);
-			tac += acc();  /*³‰ğ—¦‚ğ‰ÁZ*/
-			tmid += loss();/*Loss‚ğ‰ÁZ*/
+			tac += acc();  /*æ­£è§£ç‡ã‚’åŠ ç®—*/
+			tmid += loss();/*Lossã‚’åŠ ç®—*/
 		}
 		XTime_GetTime(&endt);
 					printf("prediction : %8.3f[pcs] ", 1000.0/((endt - startt) / 325000000.0));
 
-		/*•½‹Ï’l‚ğZo*/
+		/*å¹³å‡å€¤ã‚’ç®—å‡º*/
 		tac /= test_range / Xc;
 		lac /= train_range / Xc;
 		tmid /= test_range / Xc;
 		mid /= train_range / Xc;
 
-		XTime_GetTime(&endt);				/*1epochI—¹‚Ì‘ƒNƒƒbƒN”‚ğ‹L˜^*/
-		/*Š—vŠÔ‚ğ•\¦*/
+		XTime_GetTime(&endt);				/*1epochçµ‚äº†æ™‚ã®ç·ã‚¯ãƒ­ãƒƒã‚¯æ•°ã‚’è¨˜éŒ²*/
+		/*æ‰€è¦æ™‚é–“ã‚’è¡¨ç¤º*/
 		printf("processing time : %8.3f[s]_", (double)(endt - startt) / 325000000);
-		printf("%depoch", z);				/*ƒGƒ|ƒbƒN”‚ğ•\¦*/
-		printf("  loss:%8.3f", mid);		/*ƒGƒ|ƒbƒN–ˆ‚É•½‹Ï‚ğ‚Æ‚Á‚½ŠwKƒf[ƒ^‚Ìloss’l‚ğ•\¦*/
-		printf("  acc:%8.3f", lac);			/*ƒGƒ|ƒbƒN–ˆ‚É•½‹Ï‚ğ‚Æ‚Á‚½ŠwKƒf[ƒ^‚Ì³‰ğ—¦‚ğ•\¦*/
-		printf("  test_loss:%8.3f", tmid);	/*ƒGƒ|ƒbƒN–ˆ‚É•½‹Ï‚ğ‚Æ‚Á‚½ŒŸØƒf[ƒ^‚Ìloss’l‚ğ•\¦*/
-		printf("  test_acc:%8.3f\n", tac);	/*ƒGƒ|ƒbƒN–ˆ‚É•½‹Ï‚ğ‚Æ‚Á‚½ŒŸØƒf[ƒ^‚Ì³‰ğ—¦‚ğ•\¦*/
+		printf("%depoch", z);				/*ã‚¨ãƒãƒƒã‚¯æ•°ã‚’è¡¨ç¤º*/
+		printf("  loss:%8.3f", mid);		/*ã‚¨ãƒãƒƒã‚¯æ¯ã«å¹³å‡ã‚’ã¨ã£ãŸå­¦ç¿’ãƒ‡ãƒ¼ã‚¿ã®losså€¤ã‚’è¡¨ç¤º*/
+		printf("  acc:%8.3f", lac);			/*ã‚¨ãƒãƒƒã‚¯æ¯ã«å¹³å‡ã‚’ã¨ã£ãŸå­¦ç¿’ãƒ‡ãƒ¼ã‚¿ã®æ­£è§£ç‡ã‚’è¡¨ç¤º*/
+		printf("  test_loss:%8.3f", tmid);	/*ã‚¨ãƒãƒƒã‚¯æ¯ã«å¹³å‡ã‚’ã¨ã£ãŸæ¤œè¨¼ãƒ‡ãƒ¼ã‚¿ã®losså€¤ã‚’è¡¨ç¤º*/
+		printf("  test_acc:%8.3f\n", tac);	/*ã‚¨ãƒãƒƒã‚¯æ¯ã«å¹³å‡ã‚’ã¨ã£ãŸæ¤œè¨¼ãƒ‡ãƒ¼ã‚¿ã®æ­£è§£ç‡ã‚’è¡¨ç¤º*/
 	}
 		XLearn_model_v_2_Read_bias1_Bytes(&Instance, 0, b1, W1r * 4);
 		XLearn_model_v_2_Read_bias2_Bytes(&Instance, 0, b2, W2r * 4);
