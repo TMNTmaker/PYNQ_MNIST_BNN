@@ -663,13 +663,13 @@ void learn_model_v_2(uint8 in[Xc][Xr],
 	if (k == 0) {
 		s_l_bw(out, T, ds);
 		bfnn4_bw(ds, in4, weight4, df4, dw4, bias4);
-		leaky_relu3_bw(bo3,df4);
+		//leaky_relu3_bw(bo3,df4);
 		bd3_bw(df4);
 		bfnn3_bw(df4, in3, weight3, df3, dw3, bias3);
-		leaky_relu2_bw(bo2,df3);
+		//leaky_relu2_bw(bo2,df3);
 		bd2_bw(df3);
 		bfnn2_bw(df3, in2, weight2, df2, dw2, bias2);
-		leaky_relu1_bw(bo1,df2);
+		//leaky_relu1_bw(bo1,df2);
 		bd1_bw(df2);
 		bfnn1_bw(df2, in, dw1, bias1);
 
